@@ -12,22 +12,18 @@
   #ora { color:var(--muted); min-height:1.4em; margin-bottom:20px; }
   button { font-size:1.2rem; padding:16px 32px; border:0; border-radius:999px; background:var(--accent); color:#fff; }
   button:disabled { opacity:.5; }
-  ul { list-style:none; padding:0; margin:24px auto 0; max-width:420px; text-align:left; }
-  li { padding:10px 4px; border-bottom:1px solid #8884; }
-  li.on { color:var(--accent); font-weight:700; }
 </style>
 </head>
 <body>
-<h1>📻 QLV RADIO</h1>
+<h1>📻 La mia Web Radio</h1>
 <div id="ora">Caricamento...</div>
 <audio id="a"></audio>
 <button id="play" disabled>▶ Ascolta la radio</button>
-<ul id="lista"></ul>
 <script>
 // Tutti gli ascoltatori calcolano la posizione dall'orologio: stessa canzone, stesso momento.
 var EPOCH = Date.UTC(2026, 0, 1) / 1000;
 var a = document.getElementById('a'), ora = document.getElementById('ora');
-var lista = document.getElementById('lista'), btn = document.getElementById('play');
+var btn = document.getElementById('play');
 var brani = [], durate = [], totale = 0, i = 0, attivo = false;
 
 function durata(url) {
@@ -37,15 +33,6 @@ function durata(url) {
     t.onloadedmetadata = function () { ok(t.duration); };
     t.onerror = function () { ok(0); };
     t.src = url;
-  });
-}
-function mostra() {
-  lista.innerHTML = '';
-  brani.forEach(function (b, n) {
-    var li = document.createElement('li');
-    li.textContent = b.titolo;
-    if (n === i) li.className = 'on';
-    lista.appendChild(li);
   });
 }
 function posizione() {
@@ -62,7 +49,6 @@ function sincronizza() {
   a.src = brani[i].file;
   a.onloadedmetadata = function () { a.currentTime = p.t; a.play().catch(function () {}); };
   ora.textContent = '▶ In onda: ' + brani[i].titolo;
-  mostra();
 }
 a.onended = function () { if (attivo) sincronizza(); };
 
@@ -81,8 +67,7 @@ fetch('playlist.json?t=' + Date.now())
       if (!brani.length) throw new Error('Nessun MP3 leggibile: controlla i nomi in playlist.json');
       ora.textContent = 'Pronta! Premi il pulsante.';
       btn.disabled = false;
-      mostra();
-    });
+        });
   })
   .catch(function (e) { ora.textContent = 'Errore: ' + e.message; });
 
