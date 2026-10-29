@@ -1,5 +1,5 @@
 [
-  { "titolo": "Canzone 1", "file": "canzone1.mp3" },
-  { "titolo": "Canzone 2", "file": "canzone2.mp3" },
-  { "titolo": "Canzone 3", "file": "canzone3.mp3" }
+  { "titolo": "Canzone 1", "rap.mp3": "canzone1.mp3" },
+  { "titolo": "Canzone 2", "tempocul1.mp3": "canzone2.mp3" },
+  
 ]
