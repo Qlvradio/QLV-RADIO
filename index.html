@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La mia Web Radio</title>
+<style>
+  :root { --bg:#fff; --fg:#1a1a1a; --accent:#d9480f; --muted:#666; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#121212; --fg:#f2f2f2; --muted:#aaa; } }
+  body { margin:0; font-family:system-ui,sans-serif; background:var(--bg); color:var(--fg); text-align:center; padding:24px 16px; }
+  h1 { margin:0 0 4px; }
+  #ora { color:var(--muted); min-height:1.4em; margin-bottom:20px; }
+  button { font-size:1.1rem; padding:14px 26px; margin:6px; border:0; border-radius:999px; background:var(--accent); color:#fff; }
+  ul { list-style:none; padding:0; margin:24px auto 0; max-width:420px; text-align:left; }
+  li { padding:10px 4px; border-bottom:1px solid #8884; }
+  li.on { color:var(--accent); font-weight:700; }
+</style>
+</head>
+<body>
+<h1>📻 La mia Web Radio</h1>
+<div id="ora">Premi Play per ascoltare</div>
+<audio id="a" preload="auto"></audio>
+<button id="play">▶ Play</button>
+<button id="next">⏭ Avanti</button>
+<ul id="lista"></ul>
+<script>
+var a = document.getElementById('a'), ora = document.getElementById('ora');
+var lista = document.getElementById('lista'), brani = [], i = 0, avviato = false;
+
+function mostra() {
+  lista.innerHTML = '';
+  brani.forEach(function (b, n) {
+    var li = document.createElement('li');
+    li.textContent = b.titolo;
+    if (n === i) li.className = 'on';
+    lista.appendChild(li);
+  });
+}
+function carica(n) {
+  i = n % brani.length;
+  a.src = brani[i].file;
+  ora.textContent = '▶ ' + brani[i].titolo;
+  mostra();
+}
+function parti() { a.play().catch(function () {}); }
+
+fetch('playlist.json?t=' + Date.now())
+  .then(function (r) { return r.json(); })
+  .then(function (d) { brani = d; if (brani.length) { carica(0); mostra(); } })
+  .catch(function () { ora.textContent = 'Errore nel caricare la playlist'; });
+
+document.getElementById('play').onclick = function () {
+  if (!brani.length) return;
+  if (a.paused) { parti(); this.textContent = '⏸ Pausa'; }
+  else { a.pause(); this.textContent = '▶ Play'; }
+};
+document.getElementById('next').onclick = function () {
+  if (!brani.length) return;
+  carica(i + 1); parti();
+  document.getElementById('play').textContent = '⏸ Pausa';
+};
+a.onended = function () { carica(i + 1); parti(); };
+</script>
+</body>
+</html>
