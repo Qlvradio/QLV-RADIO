@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a2a6b">
+<title>QLV RADIO</title>
+<style>
+  :root { --blu:#0a2a6b; --blu2:#123f9c; --giallo:#ffd100; }
+  body { margin:0; min-height:100vh; font-family:system-ui,sans-serif; color:#fff; text-align:center;
+         box-sizing:border-box; background:var(--blu); }
+  header { background:var(--giallo); color:var(--blu); padding:36px 16px 28px; border-bottom:8px solid var(--blu2); }
+  h1 { margin:0; font-size:2.4rem; letter-spacing:2px; }
+  header p { margin:8px 0 0; font-weight:700; }
+  main { padding:28px 16px; }
+  #ora { min-height:1.4em; margin-bottom:24px; color:#dbe6ff; }
+  button { font-size:1.2rem; font-weight:700; padding:16px 34px; border:0; border-radius:999px;
+           background:var(--giallo); color:var(--blu); }
+  button:disabled { opacity:.5; }
+</style>
+</head>
+<body>
+<header>
+<h1>📻 QLV RADIO</h1>
+<p>La radio dei Veronesi par i veneti</p>
+</header>
+<main>
+<div id="ora">Caricamento...</div>
+<audio id="a"></audio>
+<button id="play" disabled>MÀCA QUA</button>
+</main>
+<script>
+// Tutti gli ascoltatori calcolano la posizione dall'orologio: stessa canzone, stesso momento.
+var EPOCH = Date.UTC(2026, 0, 1) / 1000;
+var a = document.getElementById('a'), ora = document.getElementById('ora');
+var btn = document.getElementById('play');
+var brani = [], durate = [], totale = 0, i = 0, attivo = false;
+
+function durata(url) {
+  return new Promise(function (ok) {
+    var t = new Audio();
+    t.preload = 'metadata';
+    t.onloadedmetadata = function () { ok(t.duration); };
+    t.onerror = function () { ok(0); };
+    t.src = url;
+  });
+}
+function posizione() {
+  var s = (Date.now() / 1000 - EPOCH) % totale;
+  for (var k = 0; k < brani.length; k++) {
+    if (s < durate[k]) return { k: k, t: s };
+    s -= durate[k];
+  }
+  return { k: 0, t: 0 };
+}
+function sincronizza() {
+  var p = posizione();
+  i = p.k;
+  a.src = brani[i].file;
+  a.onloadedmetadata = function () { a.currentTime = p.t; a.play().catch(function () {}); };
+  ora.textContent = '▶ In onda: ' + brani[i].titolo;
+}
+a.onended = function () { if (attivo) sincronizza(); };
+
+fetch('playlist.json?t=' + Date.now())
+  .then(function (r) {
+    if (!r.ok) throw new Error('playlist.json non trovato');
+    return r.json();
+  })
+  .then(function (d) {
+    ora.textContent = 'Preparo la radio...';
+    return Promise.all(d.map(function (b) { return durata(b.file); })).then(function (dur) {
+      d.forEach(function (b, n) {
+        if (dur[n] > 0) { brani.push(b); durate.push(dur[n]); totale += dur[n]; }
+      });
+      if (!brani.length) throw new Error('Nessun MP3 leggibile: controlla i nomi in playlist.json');
+      ora.textContent = 'Pronta! Premi MÀCA QUA';
+      btn.disabled = false;
+    });
+  })
+  .catch(function (e) { ora.textContent = 'Errore: ' + e.message; });
+
+btn.onclick = function () {
+  if (!attivo) { attivo = true; sincronizza(); btn.textContent = '⏹ STOP'; }
+  else { attivo = false; a.pause(); btn.textContent = 'MÀCA QUA'; ora.textContent = 'In pausa'; }
+};
+</script>
+</body>
+</html>
