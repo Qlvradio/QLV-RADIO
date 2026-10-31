@@ -6,5 +6,6 @@
   { "titolo": "Tony", "file": "vol2.mp3"},
   { "titolo": "Alpin", "file": "alpin.mp3" }, 
   { "titolo": "Pearà", "file": "pearà.mp3"}, 
-  { "titolo": "Bam Bam", "file": "meteoverona.mp3"} 
+  { "titolo": "Bam Bam", "file": "meteoverona.mp3"}, 
+  { "titolo": "Rosario", "file": "rosario.mp3"}
 ]
