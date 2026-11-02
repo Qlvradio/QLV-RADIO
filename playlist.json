@@ -8,5 +8,6 @@
   { "titolo": "Pearà", "file": "pearà.mp3"}, 
   { "titolo": "Bam Bam", "file": "meteoverona.mp3"}, 
   { "titolo": "Rosario", "file": "rosario.mp3"}, 
-  { "titolo": "Piuttosto", "file": "piutosto.mp3"}
+  { "titolo": "Piuttosto", "file": "piutosto.mp3"}, 
+  { "titolo": "Pan e Vin", "file": "panvin.mp3"}
 ]
