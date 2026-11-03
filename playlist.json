@@ -10,5 +10,6 @@
   { "titolo": "Rosario", "file": "rosario.mp3"}, 
   { "titolo": "Piuttosto", "file": "piutosto.mp3"}, 
   { "titolo": "Pan e Vin", "file": "panvin.mp3"}, 
-  { "titolo": "Centro", "file": "centro.mp3"}
+  { "titolo": "Centro", "file": "centro.mp3"}, 
+  { "titolo": "Dalla bassa", "file": "dallabassa.mp3"}
 ]
