@@ -13,5 +13,5 @@
   { "titolo": "Centro", "file": "centro.mp3"}, 
   { "titolo": "Dalla bassa", "file": "dallabassa.mp3"}, 
   { "titolo": "Luna", "file" :"luna.mp3"},
-  { "titolo": "Alta e bassa" : "altibassi.mp3"} 
+  { "titolo": "Alta e bassa", "file" : "altibassi.mp3"} 
 ]
