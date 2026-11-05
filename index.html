@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0a2a6b">
 <title>QLV RADIO</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
   :root { --blu:#0a2a6b; --blu2:#123f9c; --giallo:#ffd100; }
   body { margin:0; min-height:100vh; font-family:system-ui,sans-serif; color:#fff; text-align:center;
@@ -17,6 +19,8 @@
   button { font-size:1.2rem; font-weight:700; padding:16px 34px; border:0; border-radius:999px;
            background:var(--giallo); color:var(--blu); }
   button:disabled { opacity:.5; }
+  #cont { margin-top:28px; display:inline-block; padding:8px 18px; border-radius:999px;
+          border:2px solid var(--giallo); color:var(--giallo); font-weight:700; }
 </style>
 </head>
 <body>
@@ -28,6 +32,7 @@
 <div id="ora">Caricamento...</div>
 <audio id="a"></audio>
 <button id="play" disabled>MÀCA QUA</button>
+<div><div id="cont" hidden>👥 <span id="num">0</span> in ascolto adesso</div></div>
 </main>
 <script>
 // Tutti calcolano la posizione dall'orologio: stessa traccia, stesso momento.
@@ -37,6 +42,31 @@ var OGNI = 2;
 var a = document.getElementById('a'), ora = document.getElementById('ora');
 var btn = document.getElementById('play');
 var brani = [], durate = [], spot = [], durSpot = [], attivo = false;
+
+// Contatore ascoltatori: incolla qui l'indirizzo del tuo Firebase Realtime Database.
+// Lo vedi solo tu aprendo il sito con ?admin alla fine dell'indirizzo.
+var DATABASE_URL = 'https://qlv-radio-default-rtdb.firebaseio.com';
+var db = null, mio = null;
+function avviaContatore() {
+  if (!DATABASE_URL || typeof firebase === 'undefined') return;
+  try {
+    firebase.initializeApp({ databaseURL: DATABASE_URL });
+    db = firebase.database();
+    if (location.search.indexOf('admin') > -1) {
+      document.getElementById('cont').hidden = false;
+      db.ref('presenze').on('value', function (s) {
+        document.getElementById('num').textContent = s.numChildren();
+      });
+    }
+  } catch (e) { db = null; }
+}
+function entra() {
+  if (!db || mio) return;
+  mio = db.ref('presenze').push();
+  mio.onDisconnect().remove();
+  mio.set(true);
+}
+function esci() { if (mio) { mio.remove(); mio = null; } }
 
 function durata(url) {
   return new Promise(function (ok) {
@@ -103,6 +133,7 @@ function sincronizza() {
 a.onended = function () { if (attivo) sincronizza(); };
 
 ora.textContent = 'Preparo la radio...';
+avviaContatore();
 carica('playlist.json', brani, durate)
   .then(function () {
     if (!brani.length) throw new Error('Nessun MP3 leggibile: controlla i nomi in playlist.json');
@@ -115,8 +146,8 @@ carica('playlist.json', brani, durate)
   .catch(function (e) { ora.textContent = 'Errore: ' + e.message; });
 
 btn.onclick = function () {
-  if (!attivo) { attivo = true; sincronizza(); btn.textContent = '⏹ STOP'; }
-  else { attivo = false; a.pause(); btn.textContent = 'MÀCA QUA'; ora.textContent = 'In pausa'; }
+  if (!attivo) { attivo = true; sincronizza(); entra(); btn.textContent = '⏹ STOP'; }
+  else { attivo = false; a.pause(); esci(); btn.textContent = 'MÀCA QUA'; ora.textContent = 'In pausa'; }
 };
 </script>
 </body>
