@@ -24,7 +24,9 @@
   { "titolo": "Gatto", "file": "vicensa.mp3"}, 
   { "titolo": "Bum Cha", "file": "bum.mp3"}, 
   { "titolo": "Castagne", "file":"castagne.mp3"}, 
-  { "titolo": "Donne sassi bissi", "file": "donnesassi.mp3"}
+  { "titolo": "Donne sassi bissi", "file": "donnesassi.mp3"}, 
+  { "titolo": "Su e zo", "file" : "suezo.mp3"}, 
+  { "titolo": "Agnél", "file" : "agnel.mp3"}
 ]
 
 
