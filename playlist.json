@@ -28,7 +28,8 @@
   { "titolo": "Su e zo", "file" : "suezo.mp3"}, 
   { "titolo": "Agnél", "file" : "agnel.mp3"}, 
   { "titolo": "Paga ben", "file" : "pagaben.mp3"}, 
-  { "titolo": "El mólo e El mostro", "file" : "molomostro.mp3"}
+  { "titolo": "El mólo e El mostro", "file" : "molomostro.mp3"}, 
+  { "titolo": "Spizza", "file" : "spizza.mp3"}
 ]
 
 
